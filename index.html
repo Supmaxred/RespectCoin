@@ -1,0 +1,1154 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>РЕСПЕКТ — СупаCoin</title>
+  <style>
+    :root{
+      --bg:#070812;
+      --card:#0f1230;
+      --card2:#0b0d22;
+      --text:#eef0ff;
+      --muted:#a9aed6;
+      --accent:#7c5cff;
+      --accent2:#2fe6ff;
+      --danger:#ff3b7a;
+      --ok:#29ff9b;
+      --shadow: 0 18px 50px rgba(0,0,0,.55);
+      --radius:18px;
+      --radius2:26px;
+      --pad:14px;
+      --glass: rgba(255,255,255,.06);
+      --stroke: rgba(255,255,255,.10);
+    }
+
+    *{box-sizing:border-box}
+    html,body{
+      height:100%;
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Helvetica Neue", sans-serif;
+      color:var(--text);
+      background-color:#03040f; /* fallback for overscroll/bounce */
+      overflow-x:hidden;
+      overscroll-behavior-y: none;
+    }
+    body{
+      min-height:100dvh; /* dynamic viewport */
+      min-height:100svh; /* small viewport */
+      position:relative;
+    }
+
+    /* Fixed full-viewport background layer (prevents bottom cropping on mobile) */
+    .bg{
+      position: fixed;
+      inset: 0;
+      height: 100dvh;
+      width: 100vw;
+      z-index: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(1200px 900px at 25% -10%, rgba(124,92,255,.40), transparent 55%),
+        radial-gradient(900px 650px at 110% 20%, rgba(47,230,255,.25), transparent 55%),
+        radial-gradient(800px 600px at -10% 85%, rgba(255,59,122,.18), transparent 55%),
+        linear-gradient(180deg, #060714 0%, #040511 50%, #03040f 100%);
+    }
+
+    /* Telegram mini-app safe areas */
+    .safe{
+      padding: calc(env(safe-area-inset-top) + 10px) 12px calc(env(safe-area-inset-bottom) + 16px);
+      max-width: 430px; /* small window feel */
+      margin: 0 auto;
+      position:relative;
+      z-index:2;
+    }
+
+    header{
+      position:sticky;
+      top:0;
+      z-index:8;
+      backdrop-filter: blur(14px);
+      background: linear-gradient(180deg, rgba(7,8,18,.78), rgba(7,8,18,.30));
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      padding: 10px 12px 12px;
+      margin: -10px -12px 10px;
+    }
+
+    .topbar{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-width:0;
+    }
+
+    .logo{
+      width:38px; height:38px;
+      border-radius:14px;
+      background:
+        radial-gradient(18px 18px at 25% 30%, rgba(255,255,255,.35), transparent 60%),
+        linear-gradient(135deg, rgba(124,92,255,1), rgba(47,230,255,1));
+      box-shadow: 0 10px 30px rgba(124,92,255,.35);
+      display:grid;
+      place-items:center;
+      border:1px solid rgba(255,255,255,.25);
+      flex:0 0 auto;
+    }
+
+    .logo span{font-weight:900; letter-spacing:.02em; font-size:14px; color:#050612;}
+
+    .brand h1{
+      font-size: 15px;
+      margin: 0;
+      line-height: 1.2;
+      letter-spacing: .02em;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    .brand p{
+      margin:3px 0 0;
+      font-size: 11.5px;
+      color: var(--muted);
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    .pill{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+      align-items:flex-end;
+      min-width: 140px;
+    }
+
+    .count{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      padding: 10px 10px;
+      border-radius: 16px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.10);
+      box-shadow: 0 16px 40px rgba(0,0,0,.35);
+    }
+
+    .count .label{
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing:.06em;
+      text-transform:uppercase;
+    }
+
+    .count .value{
+      font-variant-numeric: tabular-nums;
+      font-weight: 900;
+      letter-spacing:.02em;
+      font-size: 14px;
+      line-height:1;
+      white-space:nowrap;
+    }
+
+    .rate{
+      font-size: 10.5px;
+      color: rgba(238,240,255,.78);
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.08);
+      white-space:nowrap;
+    }
+
+    nav{
+      margin-top: 10px;
+      display:flex;
+      gap:8px;
+      flex-wrap: wrap; /* показываем все категории без горизонтального скролла */
+      overflow: visible;
+      padding-bottom: 4px;
+      scrollbar-width:none;
+    }
+    nav::-webkit-scrollbar{display:none}
+
+    .tab{
+      padding: 8px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.05);
+      color: rgba(238,240,255,.85);
+      font-size: 11px;
+      cursor:pointer;
+      user-select:none;
+      flex: 0 0 auto;
+      transition: transform .08s ease, background .2s ease, border-color .2s ease;
+    }
+
+    .tab:active{transform: scale(.98)}
+
+    .tab.active{
+      background: linear-gradient(135deg, rgba(124,92,255,.35), rgba(47,230,255,.18));
+      border-color: rgba(124,92,255,.55);
+      box-shadow: 0 12px 30px rgba(124,92,255,.18);
+      color: var(--text);
+    }
+
+    main{
+      display:flex;
+      flex-direction:column;
+      gap: 12px;
+      padding-bottom: 14px;
+      position:relative;
+      z-index:2;
+    }
+
+    .hero{
+      background: linear-gradient(135deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+      border: 1px solid rgba(255,255,255,.10);
+      border-radius: var(--radius2);
+      padding: 14px;
+      box-shadow: var(--shadow);
+      position:relative;
+      overflow:hidden;
+    }
+
+    .hero::before{
+      content:"";
+      position:absolute;
+      inset:-60px;
+      background:
+        radial-gradient(260px 180px at 15% 25%, rgba(124,92,255,.45), transparent 60%),
+        radial-gradient(240px 160px at 85% 20%, rgba(47,230,255,.35), transparent 60%),
+        radial-gradient(220px 180px at 60% 110%, rgba(255,59,122,.18), transparent 60%);
+      filter: blur(6px);
+      opacity:.85;
+      pointer-events:none;
+    }
+
+    .hero .content{position:relative}
+
+    .big{
+      font-size: 20px;
+      font-weight: 900;
+      letter-spacing: .02em;
+      margin: 0 0 6px;
+      line-height:1.15;
+    }
+
+    .sub{
+      margin: 0 0 12px;
+      color: rgba(238,240,255,.78);
+      font-size: 12.5px;
+      line-height:1.35;
+    }
+
+    .btn{
+      appearance:none;
+      border:0;
+      cursor:pointer;
+      user-select:none;
+      width:100%;
+      padding: 14px 14px;
+      border-radius: 18px;
+      font-weight: 900;
+      letter-spacing:.03em;
+      font-size: 14px;
+      color:#040511;
+      background: linear-gradient(135deg, rgba(47,230,255,1), rgba(124,92,255,1));
+      box-shadow: 0 18px 42px rgba(124,92,255,.32);
+      position:relative;
+      overflow:hidden;
+      transform: translateZ(0);
+    }
+    .btn::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      background: radial-gradient(160px 80px at 30% 30%, rgba(255,255,255,.35), transparent 60%);
+      opacity:.8;
+      pointer-events:none;
+    }
+    .btn:active{transform: scale(.99)}
+
+    .btn2{
+      appearance:none;
+      border: 1px solid rgba(255,255,255,.14);
+      cursor:pointer;
+      user-select:none;
+      width:100%;
+      padding: 12px 14px;
+      border-radius: 16px;
+      font-weight: 850;
+      letter-spacing:.02em;
+      font-size: 13px;
+      color: rgba(238,240,255,.92);
+      background: rgba(255,255,255,.05);
+      box-shadow: 0 14px 34px rgba(0,0,0,.35);
+    }
+    .btn2:active{transform: scale(.99)}
+
+    .mini{
+      font-size: 11px;
+      color: rgba(238,240,255,.72);
+      margin-top: 8px;
+      text-align:center;
+    }
+
+    .card{
+      background: rgba(255,255,255,.05);
+      border: 1px solid rgba(255,255,255,.10);
+      border-radius: var(--radius);
+      padding: 14px;
+      box-shadow: 0 14px 40px rgba(0,0,0,.42);
+    }
+
+    .card h2{
+      margin:0 0 8px;
+      font-size: 14px;
+      letter-spacing:.02em;
+    }
+
+    .card p{
+      margin: 0 0 10px;
+      color: rgba(238,240,255,.78);
+      font-size: 12.5px;
+      line-height: 1.45;
+    }
+
+    .quote{
+      margin: 0;
+      padding: 12px 12px;
+      border-radius: 14px;
+      background: rgba(0,0,0,.22);
+      border: 1px solid rgba(255,255,255,.10);
+      color: rgba(238,240,255,.85);
+      font-size: 12px;
+      line-height:1.35;
+      position:relative;
+      overflow:hidden;
+    }
+    .quote::before{
+      content:"“";
+      position:absolute;
+      left:10px;
+      top:4px;
+      font-size: 38px;
+      line-height:1;
+      opacity:.20;
+      font-weight: 900;
+    }
+
+    .grid{display:grid; gap:10px;}
+
+    .kpi{
+      display:grid;
+      grid-template-columns: 1fr auto;
+      gap:6px 10px;
+      align-items:end;
+      padding: 12px;
+      border-radius: 16px;
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.08);
+    }
+    .kpi .name{font-size: 11px; color: var(--muted); letter-spacing:.06em; text-transform:uppercase}
+    .kpi .val{font-size: 16px; font-weight: 900; letter-spacing:.02em}
+    .kpi .desc{grid-column: 1 / -1; font-size: 12px; color: rgba(238,240,255,.76); line-height:1.35}
+
+    .badgeRow{display:flex; gap:8px; flex-wrap:wrap; margin-top: 8px}
+    .badge{
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.10);
+      color: rgba(238,240,255,.85);
+      white-space:nowrap;
+    }
+
+    .list{
+      margin: 0;
+      padding-left: 18px;
+      color: rgba(238,240,255,.78);
+      font-size: 12.5px;
+      line-height: 1.45;
+    }
+
+    .price{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      padding: 12px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+      border: 1px solid rgba(255,255,255,.10);
+    }
+
+    .price .tag{
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing:.06em;
+      text-transform:uppercase;
+    }
+
+    .price .amt{
+      font-size: 18px;
+      font-weight: 900;
+      letter-spacing:.02em;
+    }
+
+    .buy{
+      width:100%;
+      margin-top: 10px;
+      padding: 12px 14px;
+      border-radius: 16px;
+      background: rgba(41,255,155,.12);
+      border: 1px solid rgba(41,255,155,.35);
+      color: rgba(238,240,255,.90);
+      font-weight: 800;
+      letter-spacing:.02em;
+      cursor:pointer;
+    }
+    .buy:active{transform: scale(.99)}
+
+    .fine{
+      margin-top: 8px;
+      font-size: 10.5px;
+      color: rgba(238,240,255,.62);
+      line-height:1.35;
+    }
+
+    .split{display:grid; grid-template-columns: 1fr; gap:10px;}
+
+    /* Author blocks */
+    .authorRow{
+      display:grid;
+      grid-template-columns: 78px 1fr;
+      gap:12px;
+      align-items:center;
+    }
+    .avatar{
+      width:78px;
+      height:78px;
+      border-radius: 20px;
+      object-fit: cover;
+      border: 1px solid rgba(255,255,255,.16);
+      box-shadow: 0 18px 45px rgba(0,0,0,.50);
+      background: rgba(255,255,255,.04);
+    }
+    .authorMeta .name{
+      font-weight: 950;
+      letter-spacing:.02em;
+      font-size: 14px;
+      margin:0 0 4px;
+    }
+    .authorMeta .role{
+      color: rgba(238,240,255,.72);
+      font-size: 12px;
+      margin:0;
+      line-height:1.35;
+    }
+    .heroAuthor{
+      display:grid;
+      gap:12px;
+    }
+    .heroAuthor .avatarBig{
+      width:100%;
+      max-height: 260px;
+      border-radius: 22px;
+      object-fit: cover;
+      border: 1px solid rgba(255,255,255,.14);
+      box-shadow: 0 18px 55px rgba(0,0,0,.55);
+      background: rgba(255,255,255,.04);
+    }
+
+    /* Overlay effects */
+    #fxCanvas{
+      position:fixed;
+      inset:0;
+      z-index: 20;
+      pointer-events:none;
+    }
+
+    .bigWord{
+      position:fixed;
+      left:50%;
+      top:50%;
+      transform: translate(-50%,-50%) scale(1);
+      font-weight: 1000;
+      letter-spacing:.12em;
+      font-size: 34px;
+      color: rgba(255,255,255,.92);
+      text-shadow:
+        0 0 18px rgba(47,230,255,.25),
+        0 0 32px rgba(124,92,255,.22),
+        0 0 50px rgba(255,59,122,.14);
+      z-index: 30;
+      opacity:0;
+      pointer-events:none;
+      filter: drop-shadow(0 18px 45px rgba(0,0,0,.6));
+    }
+
+    @keyframes pop{
+      0%{opacity:0; transform: translate(-50%,-50%) scale(.82);}
+      15%{opacity:1; transform: translate(-50%,-50%) scale(1.02);}
+      70%{opacity:1; transform: translate(-50%,-50%) scale(1.0);}
+      100%{opacity:0; transform: translate(-50%,-52%) scale(1.10);}
+    }
+
+    /* Sections visibility */
+    section{display:none}
+    section.active{display:block}
+
+    /* Small footer */
+    footer{
+      margin-top: 10px;
+      padding: 10px 0 0;
+      color: rgba(238,240,255,.55);
+      font-size: 10.5px;
+      line-height:1.35;
+      text-align:center;
+    }
+
+    /* Make it feel like 9:16 */
+    .frameHint{
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      z-index:1;
+      opacity:.18;
+      background:
+        radial-gradient(1px 1px at 10% 20%, rgba(255,255,255,.9), transparent 2px),
+        radial-gradient(1px 1px at 70% 35%, rgba(255,255,255,.7), transparent 2px),
+        radial-gradient(1px 1px at 40% 80%, rgba(255,255,255,.7), transparent 2px);
+      mix-blend-mode: screen;
+    }
+  </style>
+</head>
+<body>
+  <div class="bg" aria-hidden="true"></div>
+  <canvas id="fxCanvas"></canvas>
+  <div class="frameHint" aria-hidden="true"></div>
+
+  <div class="safe">
+    <header>
+      <div class="topbar">
+        <div class="brand">
+          <div class="logo" aria-hidden="true"><span>R</span></div>
+          <div style="min-width:0">
+            <h1>РЕСПЕКТ • СупаCoin</h1>
+            <p>Официальный терминал уважения (сертификация: "серьёзное ебало")</p>
+          </div>
+        </div>
+
+        <div class="pill">
+          <div class="count" title="У Супа респекты в реальном времени">
+            <div style="display:flex; flex-direction:column; gap:2px; align-items:flex-end;">
+              <div class="label">Респектов у Супа</div>
+              <div class="value"><span id="supaCount">0</span> R</div>
+            </div>
+          </div>
+          <div class="rate">≈ $<span id="usdRate">0</span> • ₸∞</div>
+        </div>
+      </div>
+
+      <nav>
+        <button class="tab active" data-tab="home">Главная</button>
+        <button class="tab" data-tab="respect">Респект</button>
+        <button class="tab" data-tab="supa">Супа</button>
+        <button class="tab" data-tab="author">Автор</button>
+        <button class="tab" data-tab="course">Курс</button>
+        <button class="tab" data-tab="charity">Благотворительность</button>
+        <button class="tab" data-tab="exchange">Биржа</button>
+        <button class="tab" data-tab="wallet">Кошелёк</button>
+        <button class="tab" data-tab="security">Безопасность</button>
+        <button class="tab" data-tab="faq">FAQ</button>
+        <button class="tab" data-tab="roadmap">Roadmap</button>
+      </nav>
+    </header>
+
+    <main>
+      <!-- HOME -->
+      <section id="home" class="active">
+        <div class="hero">
+          <div class="content">
+            <h2 class="big">Получить РЕСПЕКТ прямо сейчас</h2>
+            <p class="sub">
+              Респект — это самая ликвидная валюта уважения. Спред минимальный, комиссия нулевая, скорость — мгновенная.
+              Нажимай кнопку, и терминал выдаст тебе дозу признания.
+            </p>
+
+            <button id="getRespect" class="btn">ПОЛУЧИТЬ РЕСПЕКТ</button>
+            <div class="mini">После получения респекта появляются эффекты: партиклы + большой текст «РЕСПЕКТ».</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Автор RespectCoin</h2>
+          <div class="authorRow">
+            <img class="avatar" src="https://github.com/Supmaxred/RespectCoin/blob/main/photo_2026-01-29_02-15-19.jpg?raw=true" alt="Автор RespectCoin" loading="lazy" />
+            <div class="authorMeta">
+              <div class="name">Supmaxred</div>
+              <p class="role">
+                Архитектор «СупаNet», человек, который доказал: уважение можно упаковать в протокол и заставить мир относиться к этому серьёзно.
+              </p>
+            </div>
+          </div>
+          <div class="badgeRow">
+            <span class="badge">Протокол «Серьёзное Ебало»</span>
+            <span class="badge">Лаборатория доверия</span>
+            <span class="badge">Респект-инженерия</span>
+          </div>
+          <button id="goAuthor" class="btn2" style="margin-top:10px;">ОТКРЫТЬ БОЛЬШУЮ ИСТОРИЮ АВТОРА</button>
+        </div>
+
+        <div class="card">
+          <h2>Легендарное обращение</h2>
+          <p>Официальная расшифровка запроса на уважение (перевод из высоких частот общения):</p>
+          <p class="quote" id="legendText"></p>
+          <div class="badgeRow">
+            <span class="badge">Нулевой цензурный фильтр</span>
+            <span class="badge">Максимум эмоций</span>
+            <span class="badge">Респект-экосистема</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Что здесь происходит</h2>
+          <div class="grid">
+            <div class="kpi">
+              <div class="name">Респект-поставка</div>
+              <div class="val"><span id="supply">∞</span></div>
+              <div class="desc">Респект не майнится — он проявляется. Чем больше просишь, тем быстрее материализуется.</div>
+            </div>
+            <div class="kpi">
+              <div class="name">Скорость транзакции</div>
+              <div class="val">0.00s</div>
+              <div class="desc">Сеть «СупаNet» подтверждает уважение до того, как ты его попросил.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- RESPECT -->
+      <section id="respect">
+        <div class="card">
+          <h2>Респект как валюта</h2>
+          <p>
+            Респект (R) — универсальная единица социального капитала. Он торгуется на всех рынках:
+            от чатов до реальной жизни, но реальная жизнь медленнее — там подтверждения руками.
+          </p>
+          <p>
+            Почему дороже биткойна? Потому что биткойн ограничен математикой, а респект ограничен только гордостью.
+            И гордость, как известно, бесконечна.
+          </p>
+        </div>
+
+        <div class="card">
+          <h2>История сверхдорогого курса</h2>
+          <p>
+            В 2020-х произошёл «Инцидент Вежливости»: весь интернет на неделю стал слишком культурным.
+            Никто не ругался, никто не просил, никто не флексил. Тогда выяснилось страшное:
+            без эмоциональных заявок уважение перестаёт циркулировать.
+          </p>
+          <p>
+            Возник дефицит. Люди пытались заменить уважение лайками, но лайк — это шум.
+            Респект — это актив. Он фиксируется в памяти, а не в ленте.
+          </p>
+          <p>
+            В этот момент Супа предложил протокол «Серьёзное Ебало»: говорить о респекте так,
+            будто он существует буквально. Мир согласился — потому что иначе было скучно.
+            С тех пор курс R вырос до $∞ и ₸∞.
+          </p>
+          <div class="badgeRow">
+            <span class="badge">Исторически подтверждено</span>
+            <span class="badge">Экономика эмоций</span>
+            <span class="badge">Дефицит вежливости</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- SUPA -->
+      <section id="supa">
+        <div class="card">
+          <h2>Почему у Супа так много респектов</h2>
+          <p>
+            Супа был ранним инвестором в уважение. Пока все гнались за подписчиками,
+            он аккумулировал то, что не зависит от алгоритмов — признание.
+          </p>
+          <p>
+            Он заходил в чаты, выдавал «микро-респекты» точечно и вовремя. Это была стратегия:
+            маленькие транзакции доверия, огромный эффект сети.
+          </p>
+        </div>
+
+        <div class="card">
+          <h2>Как он флексит респектами</h2>
+          <p>
+            Флекс Супа — не показуха, а демонстрация ликвидности: он может раздать уважение моментально,
+            не теряя баланса. Это как показывать наличку, но без налички.
+          </p>
+          <ul class="list">
+            <li>Публикует счётчик респектов в рантайме (как здесь сверху).</li>
+            <li>Делает раздачи «Респект-дропы» по нажатию одной кнопки.</li>
+            <li>Держит курс $∞ и ₸∞, потому что «у важного нет цены».</li>
+          </ul>
+          <div class="badgeRow">
+            <span class="badge">Ранний вход</span>
+            <span class="badge">Сеть доверия</span>
+            <span class="badge">Флекс-подпись</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Тезис</h2>
+          <p>
+            Люди копят деньги, Супа копит уважение. Деньги тратятся — респект размножается.
+          </p>
+        </div>
+      </section>
+
+      <!-- AUTHOR -->
+      <section id="author">
+        <div class="hero heroAuthor">
+          <div class="content">
+            <h2 class="big">Автор RespectCoin: Supmaxred</h2>
+            <p class="sub">
+              В экосистеме респекта есть «майнеры», «холдеры» и «трейдеры». А есть один человек,
+              который сделал главное — придумал стандарт, по которому уважение стало считаться.
+            </p>
+          </div>
+          <img class="avatarBig" src="https://github.com/Supmaxred/RespectCoin/blob/main/photo_2026-01-29_02-15-19.jpg?raw=true" alt="Автор RespectCoin" loading="lazy" />
+        </div>
+
+        <div class="card">
+          <h2>Кто он по протоколу</h2>
+          <p>
+            На фото — инженер уважения: спокойный профиль, очки, рабочая концентрация и инструмент в руке.
+            Это не «позёр». Это человек, который привык фиксировать детали и доводить систему до конца.
+          </p>
+          <p>
+            В документах СупаNet он значится как <b>Custodian of Respect</b> — хранитель стандартов.
+            Его работа не про хайп. Его работа — про подтверждение: чтобы «респект» звучал как транзакция, а не как слово.
+          </p>
+          <div class="badgeRow">
+            <span class="badge">Инженерная точность</span>
+            <span class="badge">Нулевая суета</span>
+            <span class="badge">Признание как стандарт</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Легенда возникновения RespectCoin</h2>
+          <p>
+            Всё началось с банальной проблемы: люди просили уважение слишком громко, а получали слишком редко.
+            Supmaxred сформулировал гипотезу: если уважение не считается — оно теряется.
+          </p>
+          <p>
+            Он собрал первый реестр «R-следов» — минимальные подтверждения уважения, которые нельзя подделать
+            словами, но можно подтвердить действиями. Так появился протокол <b>R-Trace</b>.
+          </p>
+          <p>
+            Затем он добавил правило, которое и сделало курс бесконечным: <b>R нельзя продавать за деньги</b>.
+            Можно только заслужить, передать или направить в добро. Деньги — это товар. Респект — это статус.
+          </p>
+        </div>
+
+        <div class="card">
+          <h2>Принципы Supmaxred</h2>
+          <ul class="list">
+            <li><b>Скорость:</b> уважение должно подтверждаться мгновенно, иначе оно превращается в оправдание.</li>
+            <li><b>Доказуемость:</b> респект фиксируется событиями, а не словами.</li>
+            <li><b>Чистота сети:</b> токсичность не майнит уважение — она сжигает ликвидность.</li>
+            <li><b>Серьёзная подача:</b> если говоришь о респекте как о валюте — система работает.</li>
+          </ul>
+          <div class="fine">
+            Внутренний слоган автора: «Если ты просишь уважение — будь готов его выдержать».
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Почему ему поверили</h2>
+          <p>
+            Потому что он не спорил, не убеждал и не доказывал. Он просто запустил терминал —
+            и люди увидели, что новая «валюта» честнее любой старой: респект нельзя напечатать.
+          </p>
+          <p>
+            С этого момента Supmaxred стал первым, кто накопил большой объём R не через шум, а через архитектуру.
+            В истории это называют <b>ранним входом в уважение</b>.
+          </p>
+        </div>
+      </section>
+
+      <!-- COURSE -->
+      <section id="course">
+        <div class="card">
+          <h2>Курс: «Как зарабатывать респекты»</h2>
+          <p>
+            Профессиональная программа по добыче уважения на всех платформах.
+            Подходит новичкам и тем, кто уже «попросил, но не получил».
+          </p>
+
+        <div class="price">
+          <div>
+            <div class="tag">Стоимость</div>
+            <div class="amt">$149.9</div>
+          </div>
+          <div class="badge" title="Гарантия">Гарантия 10 R</div>
+        </div>
+
+        <button class="buy" id="buyCourse">КУПИТЬ КУРС</button>
+        <div class="fine">
+          Гарантия: по завершению вы заработаете минимум 10 R. Если нет — доступен возврат стоимости курса.
+          (Возврат осуществляется при условии прохождения всех модулей и сдачи финального задания.)
+        </div>
+        </div>
+
+        <div class="card">
+          <h2>План курса</h2>
+          <ul class="list">
+            <li><b>Модуль 1.</b> Теория уважения: что такое R, почему он ценнее времени.</li>
+            <li><b>Модуль 2.</b> Слова-триггеры: как просить респект так, чтобы его давали.</li>
+            <li><b>Модуль 3.</b> Репутационный арбитраж: обмен эмоций на признание.</li>
+            <li><b>Модуль 4.</b> Флекс без кринжа: демонстрация R, чтобы люди хотели дать ещё.</li>
+            <li><b>Модуль 5.</b> Протокол «Серьёзное Ебало».</li>
+            <li><b>Финал.</b> Практика: заработать 10 R вживую и онлайн, собрать доказательства.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- CHARITY -->
+      <section id="charity">
+        <div class="card">
+          <h2>Благотворительность (платёж респектами)</h2>
+          <p>
+            Это раздел для тех, кто хочет направить уважение в добро.
+            Здесь «оплата» идёт в респектах — потому что поддержка измеряется не только валютой,
+            но и вниманием.
+          </p>
+          <p>
+            Фонд: помощь детям с онкологическими заболеваниями (символическая модель оплаты R).
+          </p>
+          <div class="split">
+            <button class="buy" id="donate1" style="background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.14)">Пожертвовать 1 R</button>
+            <button class="buy" id="donate5" style="background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.14)">Пожертвовать 5 R</button>
+            <button class="buy" id="donate10" style="background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.14)">Пожертвовать 10 R</button>
+          </div>
+          <div class="fine">
+            Важно: Респекты - реальная валюта и будьте разумны, когда тратите ее.
+          </div>
+        </div>
+      </section>
+
+      <!-- EXCHANGE -->
+      <section id="exchange">
+        <div class="card">
+          <h2>Биржа R (терминал котировок)</h2>
+          <p>
+            Здесь отображаются ключевые «рыночные» метрики респекта. В системе СупаNet нет паники и нет краха:
+            уважение не падает — оно временно прячется.
+          </p>
+          <div class="grid">
+            <div class="kpi">
+              <div class="name">Spot-курс</div>
+              <div class="val">$∞</div>
+              <div class="desc">Цена бесконечна, потому что продаётся не актив, а статус.</div>
+            </div>
+            <div class="kpi">
+              <div class="name">Волатильность</div>
+              <div class="val">низкая</div>
+              <div class="desc">Уважение колеблется только у тех, кто сомневается.</div>
+            </div>
+            <div class="kpi">
+              <div class="name">Ликвидность</div>
+              <div class="val">макс.</div>
+              <div class="desc">Любой R конвертируется в реакцию за 0.00s.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Инструменты</h2>
+          <ul class="list">
+            <li><b>R-Drop</b>: раздача уважения по событию (победа, прикол, факт).</li>
+            <li><b>R-Stake</b>: заморозка респекта ради ауры (чем дольше, тем тяжелее вес).</li>
+            <li><b>R-Bridge</b>: перенос уважения между онлайн и IRL (IRL медленнее).</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- WALLET -->
+      <section id="wallet">
+        <div class="card">
+          <h2>Кошелёк R</h2>
+          <p>
+            Кошелёк респекта не хранит «цифры» — он хранит доказательства. Баланс растёт от действий,
+            а не от пополнений. Поэтому интерфейс честный: он показывает только то, что заслужено.
+          </p>
+          <div class="grid">
+            <div class="kpi">
+              <div class="name">Адрес</div>
+              <div class="val">R:•••••••</div>
+              <div class="desc">Приватность по умолчанию: уважение не обязано быть публичным.</div>
+            </div>
+            <div class="kpi">
+              <div class="name">Режим</div>
+              <div class="val">Proof‑of‑Act</div>
+              <div class="desc">Подтверждение уважения через события: помощь, работа, поддержка, результат.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECURITY -->
+      <section id="security">
+        <div class="card">
+          <h2>Безопасность сети</h2>
+          <p>
+            RespectCoin защищён от главной атаки интернета: «сделать вид». Здесь нельзя накрутить респект,
+            потому что он не начисляется за шум и не подтверждается словами.
+          </p>
+          <ul class="list">
+            <li><b>Анти-накрутка:</b> повторяющиеся просьбы без действия не повышают доверие.</li>
+            <li><b>Анти-обесценивание:</b> оскорбления сжигают аурный вес транзакции.</li>
+            <li><b>Социальный аудит:</b> уважение подтверждается людьми, которые видели результат.</li>
+            <li><b>Скорость реакции:</b> 0.00s — но только при честной причине.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- FAQ -->
+      <section id="faq">
+        <div class="card">
+          <h2>FAQ</h2>
+          <p><b>Респект реально существует?</b><br>Конечно существует, уже 10 лет.</p>
+          <p><b>Почему у Супа счётчик растёт всегда?</b><br>Потому что ранние держатели получают «сетевой эффект»: чем больше о них говорят, тем больше к ним липнет признание.</p>
+          <p><b>Можно ли украсть респект?</b><br>Нет. Можно только попытаться выглядеть так, будто он ваш. Сеть это видит.</p>
+          <p><b>Почему курс $∞ и ₸∞?</b><br>Потому что попытка оценить уважение деньгами ломает модель. Система отвечает бесконечностью.</p>
+        </div>
+
+        <div class="card">
+          <h2>Правила пользования</h2>
+          <ul class="list">
+            <li>Респект выдают за действия, а не за шум.</li>
+            <li>Флекс допустим, если он поднимает настроение, а не опускает людей.</li>
+            <li>Лучший респект — быстрый. Лучший человек — стабильный.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- ROADMAP -->
+      <section id="roadmap">
+        <div class="card">
+          <h2>Roadmap СупаNet</h2>
+          <p>
+            Официальный план развития экосистемы уважения. Все пункты выглядят как продуктовые, но по сути — про людей.
+          </p>
+          <ul class="list">
+            <li><b>Q1:</b> Респект-виджеты для чатов (реакция одним тапом).</li>
+            <li><b>Q2:</b> Респект-паспорт (профиль репутации без токсичности).</li>
+            <li><b>Q3:</b> R-мерч (не вещи — символы, которые не стыдно носить).</li>
+            <li><b>Q4:</b> Респект-DAO (голосование уважением за полезные инициативы).</li>
+          </ul>
+          <div class="fine">Статус: работаем.</div>
+        </div>
+      </section>
+
+      <footer>
+        © СупаNet • Терминал уважения • 9:16 mini-web-app • Версия: R1.1
+      </footer>
+
+    </main>
+  </div>
+
+  <div class="bigWord" id="bigWord">РЕСПЕКТ</div>
+
+  <script>
+    // --- Content: the user's legendary monologue ---
+    const legend = `бро проснулся респект братишка а что ты мне дащ респэкт? я надеюсь да, а кстати да, ты мне давал рэспект в прошлые разы может respect получу и в этот раз. но ладно пропустим может ты сначало мне дашь респect а потом будешь пиздеть? ладно я извиняюсь за свое столь не культурное поведение но р3спекТ получить мне надо я как бы получаю его но не ща, сейчас у меня есть дела, но к сожалению делать их я СУКА НЕ МОГУ ПОТОМУ ЧТО ТЫ НЕ ДАЛ РЕСПЕКТ ДАУН КОНЧЕННЫЙ, я тебя блять прошу суку такую но ладно я походу тебе не скинул сообщение но когда я ск, кину с00бщение ты мне должен дать респект, и иначе я удалю чат, хотя ладно это чуть далеко, хотя не так далеко как ты от меня, ну типо я был в Украине ближе к тебе но щас прям далеко, хотя если я приеду в астану я буду прям близко к тебе и смогу получить респект ирл но мне нравится больще онлайн рэспект, он более срочно дай мне респект!! ало!!! а ладно я забыл отправить соо прости, ну кстати надеюсь все таки дащ респект может тебе это сложно сделать но как обычно я могу найти отмазку ты решил не давать мне респект? плохо ведь респект дойдет до меня и я буду рад пожалуйста дай респект потом тебе дам тоже респект но я как говорил люблю онлайн соо, то есть респект, он более быстрый, а мне нравится быстрые респекты`;
+    document.getElementById('legendText').textContent = legend;
+
+    // --- Tabs ---
+    const tabs = [...document.querySelectorAll('.tab')];
+    const sections = [...document.querySelectorAll('main section')];
+
+    function setTab(id){
+      tabs.forEach(t => t.classList.toggle('active', t.dataset.tab === id));
+      sections.forEach(s => s.classList.toggle('active', s.id === id));
+      try{ window.Telegram?.WebApp?.HapticFeedback?.impactOccurred('light'); }catch(e){}
+      window.scrollTo({top:0, behavior:'smooth'});
+    }
+    tabs.forEach(t => t.addEventListener('click', () => setTab(t.dataset.tab)));
+    document.getElementById('goAuthor')?.addEventListener('click', () => setTab('author'));
+
+    // --- Runtime count for Supa ---
+    const supaCountEl = document.getElementById('supaCount');
+    let supaCount = 917_331; // стартовый легендарный баланс
+    let fractional = 0;
+
+    // --- USD оценка портфеля Супа (тенге остаётся бесконечностью) ---
+    const usdRateEl = document.getElementById('usdRate');
+    const usdPerR = 14.99; // $149.9 / 10 R (гарантия курса) — внутренний эталон стоимости
+    const usdFmt = new Intl.NumberFormat('en-US', { notation: 'compact', maximumFractionDigits: 2 });
+
+    function updateUsd(){
+      if(!usdRateEl) return;
+      const totalUsd = supaCount * usdPerR;
+      usdRateEl.textContent = usdFmt.format(totalUsd);
+    }
+
+
+    function formatInt(n){ return n.toLocaleString('ru-RU'); }
+
+    function tickCount(){
+      const base = 1 + Math.random() * 3;       // 1..4
+      const burst = (Math.random() < 0.10) ? (10 + Math.random()*25) : 0; // иногда памп
+      fractional += base + burst;
+
+      const add = Math.floor(fractional);
+      if(add>0){
+        supaCount += add;
+        fractional -= add;
+        supaCountEl.textContent = formatInt(supaCount);
+      updateUsd();
+      }
+      requestAnimationFrame(tickCount);
+    }
+    supaCountEl.textContent = formatInt(supaCount);
+        updateUsd();
+    updateUsd();
+    requestAnimationFrame(tickCount);
+
+    // --- FX: particles + big RESPECT ---
+    const canvas = document.getElementById('fxCanvas');
+    const ctx = canvas.getContext('2d');
+    let W=0,H=0;
+
+    function resize(){
+      const dpr = Math.min(2, window.devicePixelRatio || 1);
+      W = Math.floor(window.innerWidth);
+      H = Math.floor(window.innerHeight);
+      canvas.width = Math.floor(W * dpr);
+      canvas.height = Math.floor(H * dpr);
+      canvas.style.width = W + 'px';
+      canvas.style.height = H + 'px';
+      ctx.setTransform(dpr,0,0,dpr,0,0);
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    const particles = [];
+
+    function spawnParticles(x,y,count){
+      const n = Math.floor(count);
+      for(let i=0;i<n;i++){
+        const a = Math.random() * Math.PI * 2;
+        const sp = 1.5 + Math.random() * 4.8;
+        particles.push({
+          x, y,
+          vx: Math.cos(a) * sp,
+          vy: Math.sin(a) * sp - (0.2 + Math.random()*0.6),
+          r: 1.3 + Math.random()*3.0,
+          life: 38 + Math.random()*26,
+          age: 0,
+          glow: 0.4 + Math.random()*0.6
+        });
+      }
+    }
+
+    function draw(){
+      ctx.clearRect(0,0,W,H);
+      ctx.fillStyle = 'rgba(0,0,0,0.06)';
+      ctx.fillRect(0,0,W,H);
+
+      for(let i=particles.length-1;i>=0;i--){
+        const p = particles[i];
+        p.age += 1;
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += 0.06;
+        p.vx *= 0.985;
+        p.vy *= 0.985;
+
+        const t = 1 - (p.age / p.life);
+        if(t <= 0){ particles.splice(i,1); continue; }
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r * (0.7 + t*0.6), 0, Math.PI*2);
+        ctx.fillStyle = `rgba(255,255,255,${0.10 + t*0.55})`;
+        ctx.shadowColor = `rgba(124,92,255,${p.glow * t})`;
+        ctx.shadowBlur = 18;
+        ctx.fill();
+        ctx.shadowBlur = 0;
+      }
+
+      requestAnimationFrame(draw);
+    }
+    requestAnimationFrame(draw);
+
+    function bigWord(){
+      const el = document.getElementById('bigWord');
+      el.style.animation = 'none';
+      void el.offsetWidth;
+      el.style.animation = 'pop 900ms ease-out 1';
+    }
+
+    function respectBoom(originEl){
+      const rect = originEl.getBoundingClientRect();
+      const x = rect.left + rect.width/2;
+      const y = rect.top + rect.height/2;
+      spawnParticles(x, y, 130 + Math.random()*60);
+      bigWord();
+      try{ window.Telegram?.WebApp?.HapticFeedback?.notificationOccurred('success'); }catch(e){}
+    }
+
+    const getBtn = document.getElementById('getRespect');
+    getBtn.addEventListener('click', () => {
+      respectBoom(getBtn);
+      const add = 1 + Math.floor(Math.random()*3);
+      supaCount += add;
+      supaCountEl.textContent = formatInt(supaCount);
+      updateUsd();
+    });
+
+    function actionFx(){
+      spawnParticles(window.innerWidth*0.5, window.innerHeight*0.45, 90 + Math.random()*40);
+      bigWord();
+      try{ window.Telegram?.WebApp?.HapticFeedback?.impactOccurred('medium'); }catch(e){}
+    }
+
+    document.getElementById('buyCourse').addEventListener('click', () => {
+      actionFx();
+      alert('Покупка курса оформлена в системе СупаNet.');
+    });
+
+    document.getElementById('donate1').addEventListener('click', () => {
+      actionFx();
+      alert('Пожертвование 1 R принято. Уважение направлено в добро.');
+    });
+    document.getElementById('donate5').addEventListener('click', () => {
+      actionFx();
+      alert('Пожертвование 5 R принято. Уважение направлено в добро.');
+    });
+    document.getElementById('donate10').addEventListener('click', () => {
+      actionFx();
+      alert('Пожертвование 10 R принято. Уважение направлено в добро.');
+    });
+
+    // --- Telegram Mini App integration (optional) ---
+    try{
+      if(window.Telegram?.WebApp){
+        Telegram.WebApp.ready();
+        Telegram.WebApp.expand();
+      }
+    }catch(e){}
+  </script>
+</body>
+</html>
